@@ -1,0 +1,39 @@
+#!/bin/bash
+
+source "${LIB_DIR}/common.sh"
+
+usage() {
+    cat << EOF
+Usage: $CMD_NAME list
+
+    list all configured interfaces
+
+Options:
+    -h, --help            show this help message
+
+Examples:
+    $CMD_NAME list
+EOF
+    exit 1
+}
+
+# Parse options
+while getopts "h-:" opt; do
+    case $opt in
+        -)
+            case "${OPTARG}" in
+                help) usage ;;
+                *) log_error "Invalid option: --$OPTARG" ;;
+            esac;;
+        h) usage ;;
+        \?) log_error "Invalid option: -$OPTARG" ;;
+    esac
+done
+
+# List interfaces
+if [ -d "$INTERFACES_D" ]; then
+    log_message "Configured interfaces:"
+    ls -1 "$INTERFACES_D"
+else
+    log_error "Interfaces directory not found: $INTERFACES_D"
+fi

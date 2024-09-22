@@ -1,0 +1,44 @@
+#!/bin/bash
+
+source "${LIB_DIR}/common.sh"
+
+usage() {
+    cat << EOF
+Usage: $CMD_NAME show [INTERFACE]
+
+    show interface configuration
+
+Options:
+    -h, --help            show this help message
+
+Examples:
+    $CMD_NAME show eth0
+EOF
+    exit 1
+}
+
+# Parse options
+while getopts "h-:" opt; do
+    case $opt in
+        -)
+            case "${OPTARG}" in
+                help) usage ;;
+                *) log_error "Invalid option: --$OPTARG" ;;
+            esac;;
+        h) usage ;;
+        \?) log_error "Invalid option: -$OPTARG" ;;
+    esac
+done
+
+shift $((OPTIND-1))
+iface="$1"
+
+if [ -z "$iface" ]; then
+    log_error "Interface name is required"
+fi
+
+if [ -f "${INTERFACES_D}/$iface" ]; then
+    cat "${INTERFACES_D}/$iface"
+else
+    log_error "Configuration for interface $iface not found"
+fi

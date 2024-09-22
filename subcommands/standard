@@ -1,0 +1,79 @@
+#!/bin/bash
+
+source "${LIB_DIR}/common.sh"
+
+usage() {
+    cat << EOF
+Usage: $CMD_NAME standard [OPTIONS]
+
+    standard interface configuration generator
+
+Options:
+    -a, --auto            up interface after reboot
+    -i, --iface TEXT      interface name
+    -p, --ip IPv4         ip address
+    -n, --netmask IPv4    netmask
+    -g, --gateway IPv4    gateway
+    -f, --file            generate configuration file in $INTERFACES_D
+    -h, --help            show this help message
+
+Examples:
+    $CMD_NAME standard -a -i eth0 -p 192.168.0.1 -n 255.255.255.0 -g 192.168.0.254
+    $CMD_NAME standard -a -i eth0 -p 192.168.0.1 -n 255.255.255.0 -g 192.168.0.254 -f
+EOF
+    exit 1
+}
+
+auto_iface_up=false
+iface=""
+address=""
+netmask=""
+gateway=""
+generate_file=false
+
+# Parse options
+while getopts "ai:p:n:g:fh-:" opt; do
+    case $opt in
+        -)
+            case "${OPTARG}" in
+                auto) auto_iface_up=true ;;
+                iface) iface="${!OPTIND}"; OPTIND=$(( $OPTIND + 1 )) ;;
+                ip) address="${!OPTIND}"; OPTIND=$(( $OPTIND + 1 )) ;;
+                netmask) netmask="${!OPTIND}"; OPTIND=$(( $OPTIND + 1 )) ;;
+                gateway) gateway="${!OPTIND}"; OPTIND=$(( $OPTIND + 1 )) ;;
+                file) generate_file=true ;;
+                help) usage ;;
+                *) log_error "Invalid option: --$OPTARG" ;;
+            esac;;
+        a) auto_iface_up=true ;;
+        i) iface="$OPTARG" ;;
+        p) address="$OPTARG" ;;
+        n) netmask="$OPTARG" ;;
+        g) gateway="$OPTARG" ;;
+        f) generate_file=true ;;
+        h) usage ;;
+        \?) log_error "Invalid option: -$OPTARG" ;;
+    esac
+done
+
+# Validate input
+[ -z "$iface" ] && log_error "Interface name is required"
+[ -z "$address" ] && log_error "IP address is required"
+[ -z "$netmask" ] && log_error "Netmask is required"
+[ -z "$gateway" ] && log_error "Gateway is required"
+
+validate_interface "$iface"
+validate_ip "$address"
+validate_netmask "$netmask"
+validate_ip "$gateway"
+
+# Generate configuration
+config=""
+$auto_iface_up && config+="auto $iface\n"
+config+="iface $iface inet static
+    address $address
+    netmask $netmask
+    gateway $gateway
+"
+
+handle_file_generation "$config" "$iface" "$generate_file"
