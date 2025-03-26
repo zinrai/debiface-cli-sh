@@ -24,40 +24,40 @@ This is an implementation using [skeleton-cli-sh](https://github.com/zinrai/skel
 The general syntax for using debiface-cli-sh is:
 
 ```
-$ ./debiface-cli-sh <subcommand> [options]
+$ ./debiface-cli.sh <subcommand> [options]
 ```
 
 For help on a specific subcommand, use:
 
 ```
-$ ./debiface-cli-sh <subcommand> --help
+$ ./debiface-cli.sh <subcommand> --help
 ```
 
 ### Examples
 
 1. Create a standard interface configuration:
    ```
-   $ ./debiface-cli-sh standard -a -i eth0 -p 192.0.2.1 -n 255.255.255.0 -g 192.0.2.254
+   $ ./debiface-cli.sh standard -a -i eth0 -p 192.0.2.1 -n 255.255.255.0 -g 192.0.2.254
    ```
 
 2. Create a bonding interface configuration:
    ```
-   $ ./debiface-cli-sh bonding -a -i bond0 -p 192.0.2.1 -n 255.255.255.0 -g 192.0.2.254 -r eth0 -s "eth0 eth1"
+   $ ./debiface-cli.sh bonding -a -i bond0 -p 192.0.2.1 -n 255.255.255.0 -g 192.0.2.254 -r eth0 -s "eth0 eth1"
    ```
 
 3. List all configured interfaces:
    ```
-   $ ./debiface-cli-sh list
+   $ ./debiface-cli.sh list
    ```
 
 4. Show configuration for a specific interface:
    ```
-   $ ./debiface-cli-sh show eth0
+   $ ./debiface-cli.sh show eth0
    ```
 
 5. Remove an interface configuration:
    ```
-   $ ./debiface-cli-sh destroy eth0
+   $ ./debiface-cli.sh destroy eth0
    ```
 
 ## File Generation
@@ -65,7 +65,7 @@ $ ./debiface-cli-sh <subcommand> --help
 By default, debiface-cli-sh outputs configurations to stdout. To generate configuration files in `/etc/network/interfaces.d/`, use the `-f` or `--file` option:
 
 ```
-$ ./debiface-cli-sh standard -a -i eth0 -p 192.0.2.1 -n 255.255.255.0 -g 192.0.2.254 -f
+$ ./debiface-cli.sh standard -a -i eth0 -p 192.0.2.1 -n 255.255.255.0 -g 192.0.2.254 -f
 ```
 
 ## Testing
